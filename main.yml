@@ -8,6 +8,9 @@
       state: present
   - name: Ensure apache is installed
     pacman:
-      name: httpd
-      update-cache: yes
+      name: apache
       state: present
+  - name: Ensure that apache is running
+    service:
+      name: apache
+      state: started
