@@ -46,4 +46,13 @@ resource "aws_instance" "media_server" {
 	instance_type = "t2.micro"
 
 	security_groups = ["${aws_security_group.administration.name}", "${aws_security_group.plex.name}", "${aws_security_group.to_all.name}"]
+
+	user_data = <<-EOF
+#!/bin/bash
+while [ ! -f /usr/bin/python ]; do
+	pacman -Sy python --noconfirm
+done
+EOF
+
+
 }
