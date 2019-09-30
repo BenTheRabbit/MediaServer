@@ -5,3 +5,9 @@
     pacman:
       name: transmission-cli
       update-cache: yes
+      state: present
+  - name: Ensure apache is installed
+    pacman:
+      name: httpd
+      update-cache: yes
+      state: present
