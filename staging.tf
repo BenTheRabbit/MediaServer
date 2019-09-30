@@ -42,7 +42,7 @@ resource "aws_security_group" "to_all" {
 
 resource "aws_instance" "media_server" {
 	key_name = "${var.aws_key_name}"
-	ami = "${lookup(var.aws_amis, var.aws_region)}"
+	am = "${lookup(var.aws_amis, var.aws_region)}"
 	instance_type = "t2.micro"
 
 	security_groups = ["${aws_security_group.administration.name}", "${aws_security_group.plex.name}", "${aws_security_group.to_all.name}"]
