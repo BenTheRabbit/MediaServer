@@ -14,3 +14,6 @@
     service:
       name: httpd
       state: started
+  - name: Ensure plex user is there
+    user:
+      name: plex
