@@ -4,6 +4,21 @@ provider "aws" {
 	region = "${var.aws_region}"
 }
 
+provider "ovh" {
+	application_key = "${var.ovh_application_key}"
+	application_secret = "${var.ovh_application_secret}"
+	consumer_key = "${var.ovh_consumer_key}"
+	endpoint = "ovh-eu"
+}
+
+
+resource "random_string" "server_name" {
+	length = 10
+	upper = false
+	number = false
+	special = false
+}
+
 resource "aws_security_group" "administration" {
 	name = "administration"
 	description = "Allow remote connexion for administration of the server"
@@ -52,13 +67,37 @@ resource "aws_instance" "media_server" {
 	instance_type = "t2.micro"
 
 	security_groups = ["${aws_security_group.administration.name}", "${aws_security_group.plex.name}", "${aws_security_group.to_all.name}"]
+	tags = {
+		Name = "${random_string.server_name.result}.gandalfstyle.com"
+
+	}
 
 	user_data = <<-EOF
 #!/bin/bash
 while [ ! -f /usr/bin/python ]; do
 	pacman -Sy python --noconfirm
 done
+echo "${random_string.server_name.result}.gandalfstyle.com" > /etc/hostname
+hostname "${random_string.server_name.result}.gandalfstyle.com"
 EOF
 
 
+}
+
+
+
+resource "ovh_domain_zone_record" "a_sub" {
+	zone = "gandalfstyle.com"
+	subdomain = random_string.server_name.result
+	fieldtype = "A"
+	ttl = "3600"
+	target = aws_instance.media_server.public_ip
+}
+
+resource "ovh_domain_zone_record" "wildcard_sub" {
+	zone = "gandalfstyle.com"
+	subdomain = "*.${random_string.server_name.result}"
+	fieldtype = "A"
+	ttl = "3600"
+	target = aws_instance.media_server.public_ip
 }

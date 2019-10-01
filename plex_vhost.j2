@@ -1,0 +1,5 @@
+<VirtualHost *:80>
+  ServerName plex.{{ansible_nodename}}
+  ProxyPass        / http://localhost:32400/
+  ProxyPassReverse / http://localhost:32400/
+</VirtualHost>

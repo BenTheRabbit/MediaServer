@@ -8,19 +8,25 @@ import json
 #tf_object = "media_server"
 #uri = "/"
 #pattern = "Index"
-tf_object = sys.argv[1]
+subdomain = sys.argv[1]
 uri = sys.argv[2]
 pattern = sys.argv[3]
 
+server_name = ""
 
 # Load inventory from terraform
-inventory = json.loads(os.popen("TF_STATE=./ terraform-inventory  --list").read())
+inventory = json.loads(os.popen("terraform show -json").read())
 
-# Get the media_server
-server = inventory[tf_object][0]
+for resource in inventory['values']['root_module']['resources']:
+    if resource['name'] == "a_sub":
+        server_name = resource['values']['subdomain'] + "." + resource['values']['zone']
 
+if subdomain == "root":
+    subdomain = ""
+else:
+    subdomain = subdomain + "."
 # Fetch the URL
-url = "http://" + server + uri
+url = "http://" + subdomain + server_name + uri
 print(url)
 
 try:
@@ -36,5 +42,5 @@ else:
     if(content.find(pattern) != -1):
         print("OK")
     else:
-        print("Pattern : " + pattern + "not found in " + url)
+        print("Pattern \"" + pattern + "\" not found in " + url)
         exit(1)
