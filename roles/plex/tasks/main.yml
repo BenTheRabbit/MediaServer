@@ -1,0 +1,23 @@
+- name: Expand tmp
+  mount:
+    path: /tmp
+    opts: remount,size=2G,noatime
+    state: mounted
+    src: tmpfs
+    fstype: tmpfs
+- name: Create vhost for plex
+  template:
+    src: plex_vhost.j2
+    dest: /etc/httpd/conf/vhost/zz-plex.conf
+    mode: 644
+  notify: restart apache
+- name: Install plex
+  aur:
+    name: plex-media-server
+    use: makepkg
+  become: yes
+  become_user: aur_builder
+- name: Ensure plex is running
+  service:
+    name: plexmediaserver
+    state: started

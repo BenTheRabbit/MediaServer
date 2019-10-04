@@ -1,0 +1,26 @@
+<VirtualHost *:80>
+	ServerAdmin webmaster@localhost
+	ServerName {{user_name}}.{{ansible_nodename}}
+	
+
+	DocumentRoot /home/{{user_name}}/www/
+	<Directory /home/{{user_name}}/www/>
+		Options Indexes FollowSymLinks MultiViews
+		AllowOverride all
+		Order allow,deny
+		allow from all
+	</Directory>
+
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel warn
+
+	ServerPath /transmission
+	
+	ProxyPass /transmission http://localhost:{{port}}/transmission
+	ProxyPassReverse /transmission http:/localhost:{{port}}/transmission
+	ProxyPreserveHost On
+	ProxyErrorOverride Off
+	
+</VirtualHost>

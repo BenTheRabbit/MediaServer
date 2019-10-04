@@ -1,0 +1,10 @@
+- name: Ensure Aur user is created
+  user:
+    name: aur_builder
+- name: Give aur_builder right to execute pacman
+  lineinfile:
+    path: /etc/sudoers.d/aur_builder-allow-to-sudo-pacman
+    state: present
+    line: "aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman"
+    validate: /usr/sbin/visudo -cf %s
+    create: yes

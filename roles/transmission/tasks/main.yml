@@ -1,0 +1,5 @@
+- name: Ensure transmission is installed
+  pacman:
+    name: transmission-cli
+    update-cache: yes
+    state: present

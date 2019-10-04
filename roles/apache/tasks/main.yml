@@ -1,0 +1,36 @@
+- name: Ensure apache is installed
+  pacman:
+    name: apache
+    state: present
+- name: Ensure that apache is running
+  service:
+    name: httpd
+    state: started
+- name: Install default web page
+  copy:
+    src: index.html
+    dest: /srv/http/index.html
+- name: Configure apache to look into the vhost dir
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    regexp: "^Include /etc/httpd/conf/vhost/*.conf"
+    line: "Include /etc/httpd/conf/vhost/*.conf"
+  notify: restart apache
+- name: Create vhost dir
+  file:
+    path: /etc/httpd/conf/vhost
+    state: directory
+    mode: 644
+- name: Create default vhost
+  copy:
+    src: default_vhost
+    dest: /etc/httpd/conf/vhost/default.conf
+    mode: 644
+  notify: restart apache
+- name: Ensure apache modules are loaded
+  lineinfile:
+    path: /etc/httpd/conf/vhost/module.conf
+    line: "LoadModule proxy_module modules/mod_proxy.so\nLoadModule proxy_http_module modules/mod_proxy_http.so"
+    mode: 644
+    create: yes
+  notify: restart apache

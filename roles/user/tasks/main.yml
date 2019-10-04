@@ -1,0 +1,31 @@
+- name: Create user
+  user:
+    name: "{{user_name}}"
+- name: Create torrent directory
+  file:
+    path: "/home/{{user_name}}/torrent"
+    state: directory
+    owner: "{{user_name}}"
+- name: Select a random port
+  set_fact:
+          port: "{{6700 | random(start=6600)}}"
+- name: Ensure transmission directory exist
+  file:
+    path: "/home/{{user_name}}/.config/transmission-daemon"
+    state: directory
+    owner: "{{user_name}}"
+- name: Copy torrent file
+  template:
+    src: settings.json.j2
+    dest: "/home/{{user_name}}/.config/transmission-daemon/settings.json"
+    owner: "{{user_name}}"
+- name: Create user web directory
+  file:
+    path: "/home/{{user_name}}/web"
+    state: directory
+    owner: "{{user_name}}"
+- name: Copy vhost file
+  template:
+    src: user_vhost.j2
+    dest: "/etc/httpd/conf/vhost/zz-{{user_name}}.{{ansible_nodename}}.conf"
+  notify: restart apache

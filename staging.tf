@@ -77,6 +77,7 @@ resource "aws_instance" "media_server" {
 while [ ! -f /usr/bin/python ]; do
 	pacman -Sy python --noconfirm
 done
+pacman -Suy --noconfirm
 echo "${random_string.server_name.result}.gandalfstyle.com" > /etc/hostname
 hostname "${random_string.server_name.result}.gandalfstyle.com"
 EOF
