@@ -19,7 +19,7 @@ resource "random_string" "server_name" {
 	special = false
 }
 
-resource "aws_security_group" "administration" {
+resource "aws_security_group" "${random_string.server_name.result}_administration" {
 	name = "administration"
 	description = "Allow remote connexion for administration of the server"
 	
@@ -31,7 +31,7 @@ resource "aws_security_group" "administration" {
 	}
 }
 
-resource "aws_security_group" "plex" {
+resource "aws_security_group" "${random_string.server_name.result}_plex" {
 	name = "plex"
 	description = "Allow traffic for Plex Media Server"
 
@@ -49,7 +49,7 @@ resource "aws_security_group" "plex" {
 	}
 }
 
-resource "aws_security_group" "to_all" {
+resource "aws_security_group" "${random_string.server_name.result}_to_all" {
 	name = "to_all"
 	description = "Allow to internet, all port"
 
@@ -66,7 +66,7 @@ resource "aws_instance" "media_server" {
 	ami = "${lookup(var.aws_amis, var.aws_region)}"
 	instance_type = "t2.micro"
 
-	security_groups = ["${aws_security_group.administration.name}", "${aws_security_group.plex.name}", "${aws_security_group.to_all.name}"]
+	security_groups = ["${aws_security_group.${random_string.server_name.result}_administration.name}", "${aws_security_group.${random_string.server_name.result}_plex.name}", "${aws_security_group.${random_string.server_name.result}_to_all.name}"]
 	tags = {
 		Name = "${random_string.server_name.result}.gandalfstyle.com"
 
